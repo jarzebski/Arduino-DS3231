@@ -662,11 +662,20 @@ void DS3231::setAlarm1(uint8_t dydw, uint8_t hour, uint8_t minute, uint8_t secon
     }
 
     Wire.beginTransmission(DS3231_ADDRESS);
-    Wire.write(DS3231_REG_ALARM_1);
-    Wire.write(second);
-    Wire.write(minute);
-    Wire.write(hour);
-    Wire.write(dydw);
+    #if ARDUINO >= 100
+        Wire.write(DS3231_REG_ALARM_1);
+        Wire.write(second);
+        Wire.write(minute);
+        Wire.write(hour);
+        Wire.write(dydw);
+    #else
+        Wire.send(DS3231_REG_ALARM_1);
+        Wire.send(second);
+        Wire.send(minute);
+        Wire.send(hour);
+        Wire.send(dydw);
+    #endif
+
     Wire.endTransmission();
 
     armAlarm1(armed);
@@ -836,10 +845,18 @@ void DS3231::setAlarm2(uint8_t dydw, uint8_t hour, uint8_t minute, DS3231_alarm2
     }
 
     Wire.beginTransmission(DS3231_ADDRESS);
-    Wire.write(DS3231_REG_ALARM_2);
-    Wire.write(minute);
-    Wire.write(hour);
-    Wire.write(dydw);
+    #if ARDUINO >= 100
+        Wire.write(DS3231_REG_ALARM_2);
+        Wire.write(minute);
+        Wire.write(hour);
+        Wire.write(dydw);
+    #else
+        Wire.send(DS3231_REG_ALARM_2);
+        Wire.send(minute);
+        Wire.send(hour);
+        Wire.send(dydw);
+    #endif
+
     Wire.endTransmission();
 
     armAlarm2(armed);
