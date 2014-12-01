@@ -1,3 +1,10 @@
+DS3231 Arduino Library 1.0.1 / 01.12.2014
+=========================================
+
+ * Fix time & square wave battery backup
+ * New function setBattery(bool timeBattery, bool squareBattery)
+ * setBattery(true, false) is default called on begin()
+
 DS3231 Arduino Library 1.0.0 / 27.04.2014
 =========================================
 

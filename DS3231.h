@@ -1,7 +1,7 @@
 /*
 DS3231.h - Header file for the DS3231 Real-Time Clock
 
-Version: 1.0.0
+Version: 1.0.1
 (c) 2014 Korneliusz Jarzebski
 www.jarzebski.pl
 
@@ -123,6 +123,8 @@ class DS3231
 	void armAlarm2(bool armed);
 	bool isArmed2(void);
 	void clearAlarm2(void);
+
+	void setBattery(bool timeBattery, bool squareBattery);
 
 	char* dateFormat(const char* dateFormat, RTCDateTime dt);
 	char* dateFormat(const char* dateFormat, RTCAlarmTime dt);

@@ -1,7 +1,7 @@
 /*
 DS3231.cpp - Class file for the DS3231 Real-Time Clock
 
-Version: 1.0.0
+Version: 1.0.1
 (c) 2014 Korneliusz Jarzebski
 www.jarzebski.pl
 
@@ -33,6 +33,8 @@ const uint8_t dowArray[] PROGMEM = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
 bool DS3231::begin(void)
 {
     Wire.begin();
+
+    setBattery(true, false);
 
     t.year = 2000;
     t.month = 1;
@@ -431,6 +433,31 @@ void DS3231::enableOutput(bool enabled)
 
     value &= 0b11111011;
     value |= (!enabled << 2);
+
+    writeRegister8(DS3231_REG_CONTROL, value);
+}
+
+void DS3231::setBattery(bool timeBattery, bool squareBattery)
+{
+    uint8_t value;
+
+    value = readRegister8(DS3231_REG_CONTROL);
+
+    if (squareBattery)
+    {
+        value |= 0b01000000;
+    } else
+    {
+        value &= 0b10111111;
+    }
+
+    if (timeBattery)
+    {
+        value &= 0b01111011;
+    } else
+    {
+        value |= 0b10000000;
+    }
 
     writeRegister8(DS3231_REG_CONTROL, value);
 }
