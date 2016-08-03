@@ -43,7 +43,7 @@ bool DS3231::begin(void)
     t.minute = 0;
     t.second = 0;
     t.dayOfWeek = 6;
-    t.unixtime = 946681200;
+    t.unixtime = 946684800;
 
     return true;
 }
@@ -1133,7 +1133,7 @@ uint16_t DS3231::date2days(uint16_t year, uint8_t month, uint8_t day)
         ++days16;
     }
 
-    return days16 + 365 * year + (year + 3) / 4 - 1;
+    return days16 + 365 * year + (year + 3) / 4;
 }
 
 uint32_t DS3231::unixtime(void)
