@@ -137,6 +137,67 @@ void DS3231::setDateTime(uint32_t t)
     setDateTime(year+2000, month, day, hour, minute, second);
 }
 
+
+RTCDateTime DS3231::LoadDateTimeFromLong(uint32_t t)
+{
+    t -= 946681200;
+
+    uint16_t year;
+    uint8_t month;
+    uint8_t day;
+    uint8_t hour;
+    uint8_t minute;
+    uint8_t second;
+
+    second = t % 60;
+    t /= 60;
+
+    minute = t % 60;
+    t /= 60;
+
+    hour = t % 24;
+    uint16_t days = t / 24;
+    uint8_t leap;
+
+    for (year = 0; ; ++year)
+    {
+        leap = year % 4 == 0;
+        if (days < 365 + leap)
+        {
+            break;
+        }
+        days -= 365 + leap;
+    }
+
+    for (month = 1; ; ++month)
+    {
+        uint8_t daysPerMonth = pgm_read_byte(daysArray + month - 1);
+
+        if (leap && month == 2)
+        {
+            ++daysPerMonth;
+        }
+
+        if (days < daysPerMonth)
+        {
+            break;
+        }
+        days -= daysPerMonth;
+    }
+
+    day = days + 1;
+
+    RTCDateTime temp;
+    temp.year = year+2000;
+    temp.month = month;
+    temp.day = day;
+    temp.hour = hour;
+    temp.minute = minute;
+    temp.second = second;
+
+    return temp;
+}
+
 void DS3231::setDateTime(const char* date, const char* time)
 {
     uint16_t year;
@@ -1128,7 +1189,7 @@ uint16_t DS3231::date2days(uint16_t year, uint8_t month, uint8_t day)
         days16 += pgm_read_byte(daysArray + i - 1);
     }
 
-    if ((month == 2) && isLeapYear(year))
+    if ((month > 2) && isLeapYear(year))
     {
         ++days16;
     }
