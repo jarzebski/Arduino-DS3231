@@ -1051,20 +1051,26 @@ char *DS3231::strAmPm(uint8_t hour, bool uppercase)
 
 char *DS3231::strDaySufix(uint8_t day)
 {
-    if (day % 10 == 1)
-    {
-        return "st";
-    } else
-    if (day % 10 == 2)
-    {
-        return "nd";
-    }
-    if (day % 10 == 3)
-    {
-        return "rd";
-    }
-
-    return "th";
+ 	if (day >= 11 && day <= 13)
+ 	{
+	    return "th";
+	}
+	
+	switch (day % 10)
+	{
+	    case 1:
+	        return "st";
+	    break;
+	    case 2:
+	        return "nd";
+	    break;
+	    case 3:
+	        return "rd";
+	    break;
+	    default:
+	        return "th";
+	    break;
+	}
 }
 
 uint8_t DS3231::hour12(uint8_t hour24)
