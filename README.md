@@ -3,8 +3,10 @@ Arduino-DS3231
 
 DS3231 Real-Time Clock.
 
+![DS3231](http://www.jarzebski.pl/media/big/publish/2014/04/ds3231-dateformat.png)
+
 I need your help
-================
+----------------
 
 July 31, 2017
 
@@ -16,9 +18,7 @@ If you want to support the further and long-term development of libraries, pleas
 
 You can do this by transferring any amount to my PayPal account: paypal@jarzebski.pl
 
-Thanks
-
-![DS3231](http://www.jarzebski.pl/media/big/publish/2014/04/ds3231-dateformat.png)
+Thanks!
 
 Date formats (Day)
 ------------------
