@@ -129,6 +129,8 @@ class DS3231
 	char* dateFormat(const char* dateFormat, RTCDateTime dt);
 	char* dateFormat(const char* dateFormat, RTCAlarmTime dt);
 
+    static RTCDateTime LoadDateTimeFromLong(uint32_t t);
+
     private:
 	RTCDateTime t;
 
