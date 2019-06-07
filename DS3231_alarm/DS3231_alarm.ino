@@ -38,7 +38,7 @@ void setup()
   // Set Alarm - Every full minute.
   // DS3231_EVERY_MINUTE is available only on Alarm2.
   // setAlarm2(Date or Day, Hour, Minute, Second, Mode, Armed = true)
-  // clock.setAlarm2(0, 0, 0, 0, DS3231_EVERY_MINUTE);
+  // clock.setAlarm2(0, 0, 0,    DS3231_EVERY_MINUTE);
   
   // Set Alarm1 - Every 20s in each minute
   // setAlarm1(Date or Day, Hour, Minute, Second, Mode, Armed = true)
