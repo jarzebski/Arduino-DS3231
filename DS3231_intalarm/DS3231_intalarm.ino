@@ -12,7 +12,6 @@
 DS3231 clock;
 RTCDateTime dt;
 boolean isAlarm = false;
-boolean alarmState = false;
 int alarmLED = 4;
 
 void alarmFunction()
@@ -35,7 +34,8 @@ void setup()
   clock.armAlarm2(false);
   clock.clearAlarm1();
   clock.clearAlarm2();
-
+  clock.enableOutput(false);
+  
   // Manual (Year, Month, Day, Hour, Minute, Second)
   clock.setDateTime(2014, 4, 25, 0, 0, 0);
 
@@ -43,8 +43,8 @@ void setup()
   // setAlarm1(Date or Day, Hour, Minute, Second, Mode, Armed = true)
   clock.setAlarm1(0, 0, 0, 10, DS3231_MATCH_S);
 
-  // Attach Interrput 0. In Arduino UNO connect DS3231 INT to Arduino Pin 2
-  attachInterrupt(0, alarmFunction, FALLING);
+  // Attach Interrput to Arduino Pin 2
+  attachInterrupt(digitalPinToInterrupt(2), alarmFunction, FALLING);
 
   // Setup LED Pin
   pinMode(alarmLED, OUTPUT);
@@ -54,14 +54,14 @@ void loop()
 {
   dt = clock.getDateTime();
   Serial.println(clock.dateFormat("d-m-Y H:i:s - l", dt));
-
+  
+  digitalWrite(alarmLED, isAlarm);
   if (isAlarm)
   {
-    digitalWrite(alarmLED, alarmState);
-    alarmState = !alarmState;
+    isAlarm = !isAlarm;
     clock.clearAlarm1();
-  } 
-
+  }
+  
   delay(1000);
 }
 
