@@ -170,7 +170,7 @@ void DS3231::setDateTime(const char* date, const char* time)
 
 char* DS3231::dateFormat(const char* dateFormat, RTCDateTime dt)
 {
-    char buffer[255];
+    static char buffer[255];
 
     buffer[0] = 0;
 
@@ -298,7 +298,7 @@ char* DS3231::dateFormat(const char* dateFormat, RTCDateTime dt)
 
 char* DS3231::dateFormat(const char* dateFormat, RTCAlarmTime dt)
 {
-    char buffer[255];
+    static char buffer[255];
 
     buffer[0] = 0;
 
