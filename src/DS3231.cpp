@@ -1,21 +1,27 @@
 /*
-DS3231.cpp - Class file for the DS3231 Real-Time Clock
 
-Version: 1.0.1
-(c) 2014 Korneliusz Jarzebski
-www.jarzebski.pl
+The MIT License
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the version 3 GNU General Public License as
-published by the Free Software Foundation.
+Copyright (c) 2014-2023 Korneliusz Jarzębski
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 */
 
 #if ARDUINO >= 100
@@ -76,12 +82,6 @@ void DS3231::setDateTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour
         Wire.send(dec2bcd(year-2000));
     #endif
 
-    #if ARDUINO >= 100
-        Wire.write(DS3231_REG_TIME);
-    #else
-        Wire.send(DS3231_REG_TIME);
-    #endif
-
     Wire.endTransmission();
 }
 
@@ -138,7 +138,7 @@ void DS3231::setDateTime(uint32_t t)
 }
 
 
-RTCDateTime DS3231::LoadDateTimeFromLong(uint32_t t)
+RTCDateTime DS3231::loadDateTimeFromLong(uint32_t t)
 {
     t -= 946681200;
 
@@ -231,7 +231,7 @@ void DS3231::setDateTime(const char* date, const char* time)
 
 char* DS3231::dateFormat(const char* dateFormat, RTCDateTime dt)
 {
-    char buffer[255];
+    static char buffer[255];
 
     buffer[0] = 0;
 
@@ -359,7 +359,7 @@ char* DS3231::dateFormat(const char* dateFormat, RTCDateTime dt)
 
 char* DS3231::dateFormat(const char* dateFormat, RTCAlarmTime dt)
 {
-    char buffer[255];
+    static char buffer[255];
 
     buffer[0] = 0;
 
@@ -456,8 +456,6 @@ RTCDateTime DS3231::getDateTime(void)
 
     Wire.requestFrom(DS3231_ADDRESS, 7);
 
-    while(!Wire.available()) {};
-
     for (int i = 6; i >= 0; i--)
     {
         #if ARDUINO >= 100
@@ -466,8 +464,6 @@ RTCDateTime DS3231::getDateTime(void)
             values[i] = bcd2dec(Wire.receive());
         #endif
     }
-
-    Wire.endTransmission();
 
     t.year = values[0] + 2000;
     t.month = values[1];
@@ -610,8 +606,6 @@ float DS3231::readTemperature(void)
 
     Wire.requestFrom(DS3231_ADDRESS, 2);
 
-    while(!Wire.available()) {};
-
     #if ARDUINO >= 100
     msb = Wire.read();
     lsb = Wire.read();
@@ -638,8 +632,6 @@ RTCAlarmTime DS3231::getAlarm1(void)
 
     Wire.requestFrom(DS3231_ADDRESS, 4);
 
-    while(!Wire.available()) {};
-
     for (int i = 3; i >= 0; i--)
     {
         #if ARDUINO >= 100
@@ -648,8 +640,6 @@ RTCAlarmTime DS3231::getAlarm1(void)
             values[i] = bcd2dec(Wire.receive() & 0b01111111);
         #endif
     }
-
-    Wire.endTransmission();
 
     a.day = values[0];
     a.hour = values[1];
@@ -674,8 +664,6 @@ DS3231_alarm1_t DS3231::getAlarmType1(void)
 
     Wire.requestFrom(DS3231_ADDRESS, 4);
 
-    while(!Wire.available()) {};
-
     for (int i = 3; i >= 0; i--)
     {
         #if ARDUINO >= 100
@@ -684,8 +672,6 @@ DS3231_alarm1_t DS3231::getAlarmType1(void)
             values[i] = bcd2dec(Wire.receive());
         #endif
     }
-
-    Wire.endTransmission();
 
     mode |= ((values[3] & 0b01000000) >> 6);
     mode |= ((values[2] & 0b01000000) >> 5);
@@ -835,8 +821,6 @@ RTCAlarmTime DS3231::getAlarm2(void)
 
     Wire.requestFrom(DS3231_ADDRESS, 3);
 
-    while(!Wire.available()) {};
-
     for (int i = 2; i >= 0; i--)
     {
         #if ARDUINO >= 100
@@ -845,8 +829,6 @@ RTCAlarmTime DS3231::getAlarm2(void)
             values[i] = bcd2dec(Wire.receive() & 0b01111111);
         #endif
     }
-
-    Wire.endTransmission();
 
     a.day = values[0];
     a.hour = values[1];
@@ -871,8 +853,6 @@ DS3231_alarm2_t DS3231::getAlarmType2(void)
 
     Wire.requestFrom(DS3231_ADDRESS, 3);
 
-    while(!Wire.available()) {};
-
     for (int i = 2; i >= 0; i--)
     {
         #if ARDUINO >= 100
@@ -881,8 +861,6 @@ DS3231_alarm2_t DS3231::getAlarmType2(void)
             values[i] = bcd2dec(Wire.receive());
         #endif
     }
-
-    Wire.endTransmission();
 
     mode |= ((values[2] & 0b01000000) >> 5);
     mode |= ((values[1] & 0b01000000) >> 4);
@@ -1018,28 +996,28 @@ char *DS3231::strDayOfWeek(uint8_t dayOfWeek)
 {
     switch (dayOfWeek) {
         case 1:
-            return "Monday";
+            return (char*) "Monday";
             break;
         case 2:
-            return "Tuesday";
+            return (char*) "Tuesday";
             break;
         case 3:
-            return "Wednesday";
+            return (char*) "Wednesday";
             break;
         case 4:
-            return "Thursday";
+            return (char*) "Thursday";
             break;
         case 5:
-            return "Friday";
+            return (char*) "Friday";
             break;
         case 6:
-            return "Saturday";
+            return (char*) "Saturday";
             break;
         case 7:
-            return "Sunday";
+            return (char*) "Sunday";
             break;
         default:
-            return "Unknown";
+            return (char*) "Unknown";
     }
 }
 
@@ -1047,43 +1025,43 @@ char *DS3231::strMonth(uint8_t month)
 {
     switch (month) {
         case 1:
-            return "January";
+            return (char*) "January";
             break;
         case 2:
-            return "February";
+            return (char*) "February";
             break;
         case 3:
-            return "March";
+            return (char*) "March";
             break;
         case 4:
-            return "April";
+            return (char*) "April";
             break;
         case 5:
-            return "May";
+            return (char*) "May";
             break;
         case 6:
-            return "June";
+            return (char*) "June";
             break;
         case 7:
-            return "July";
+            return (char*) "July";
             break;
         case 8:
-            return "August";
+            return (char*) "August";
             break;
         case 9:
-            return "September";
+            return (char*) "September";
             break;
         case 10:
-            return "October";
+            return (char*) "October";
             break;
         case 11:
-            return "November";
+            return (char*) "November";
             break;
         case 12:
-            return "December";
+            return (char*) "December";
             break;
         default:
-            return "Unknown";
+            return (char*) "Unknown";
     }
 }
 
@@ -1093,45 +1071,45 @@ char *DS3231::strAmPm(uint8_t hour, bool uppercase)
     {
         if (uppercase)
         {
-            return "AM";
+            return (char*) "AM";
         } else
         {
-            return "am";
+            return (char*) "am";
         }
     } else
     {
         if (uppercase)
         {
-            return "PM";
+            return (char*) "PM";
         } else
         {
-            return "pm";
+            return (char*) "pm";
         }
     }
 }
 
 char *DS3231::strDaySufix(uint8_t day)
 {
- 	if (day >= 11 && day <= 13)
- 	{
-	    return "th";
-	}
-	
-	switch (day % 10)
-	{
-	    case 1:
-	        return "st";
-	    break;
-	    case 2:
-	        return "nd";
-	    break;
-	    case 3:
-	        return "rd";
-	    break;
-	    default:
-	        return "th";
-	    break;
-	}
+     if (day >= 11 && day <= 13)
+     {
+         return (char*) "th";
+     }
+
+     switch (day % 10)
+     {
+         case 1:
+             return (char*) "st";
+             break;
+         case 2:
+             return (char*) "nd";
+             break;
+         case 3:
+             return (char*) "rd";
+             break;
+         default:
+             return (char*) "th";
+         break;
+      }
 }
 
 uint8_t DS3231::hour12(uint8_t hour24)
@@ -1193,11 +1171,10 @@ uint16_t DS3231::date2days(uint16_t year, uint8_t month, uint8_t day)
     for (uint8_t i = 1; i < month; ++i)
     {
         days16 += pgm_read_byte(daysArray + i - 1);
-    }
-
-    if ((month > 2) && isLeapYear(year))
-    {
-        ++days16;
+        if ((month == 1) && isLeapYear(year))
+        {
+            ++days16;
+        }
     }
 
     return days16 + 365 * year + (year + 3) / 4 - 1;
@@ -1265,13 +1242,12 @@ uint8_t DS3231::readRegister8(uint8_t reg)
     Wire.endTransmission();
 
     Wire.requestFrom(DS3231_ADDRESS, 1);
-    while(!Wire.available()) {};
+
     #if ARDUINO >= 100
         value = Wire.read();
     #else
         value = Wire.receive();
-    #endif;
-    Wire.endTransmission();
+    #endif
 
     return value;
 }
