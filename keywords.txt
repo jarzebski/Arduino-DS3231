@@ -1,0 +1,46 @@
+###########################################
+# Syntax Coloring Map For INA226
+###########################################
+
+###########################################
+# Datatypes (KEYWORD1)
+###########################################
+
+DS3231				KEYWORD1
+
+###########################################
+# Methods and Functions (KEYWORD2)
+###########################################
+begin				KEYWORD2
+setDateTime			KEYWORD2
+getDateTime			KEYWORD2
+isReady				KEYWORD2
+getOutput			KEYWORD2
+setOutput			KEYWORD2
+enableOutput			KEYWORD2
+isOutput			KEYWORD2
+enable32kHz			KEYWORD2
+is32kHz				KEYWORD2
+forceConversion			KEYWORD2
+readTemperature			KEYWORD2
+setAlarm1			KEYWORD2
+getAlarm1			KEYWORD2
+getAlarmType1			KEYWORD2
+isAlarm1			KEYWORD2
+armAlarm1			KEYWORD2
+isArmed1			KEYWORD2
+clearAlarm1			KEYWORD2
+setAlarm2			KEYWORD2
+getAlarm2			KEYWORD2
+getAlarmType2			KEYWORD2
+isAlarm2			KEYWORD2
+armAlarm2			KEYWORD2
+isArmed2			KEYWORD2
+clearAlarm2			KEYWORD2
+setBattery			KEYWORD2
+dateFormat			KEYWORD2
+loadDateTimeFromLong		KEYWORD2
+
+###########################################
+# Constants (LITERAL1)
+###########################################

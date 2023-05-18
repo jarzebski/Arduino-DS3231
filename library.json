@@ -1,0 +1,16 @@
+{
+  "name": "Arduino-DS3231",
+  "keywords": "DC3231, timer, clock, i2c",
+  "description": "DS3231 Real-Time Clock",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jarzebski/Arduino-DS3231"
+  },
+  "authors": {
+    "name": "Korneliusz Jarzębski",
+    "url": "https://www.jarzebski.pl"
+  },
+  "version": "1.1.0",
+  "frameworks": "arduino",
+  "platforms": "*"
+}
