@@ -36,9 +36,13 @@ SOFTWARE.
 const uint8_t daysArray [] PROGMEM = { 31,28,31,30,31,30,31,31,30,31,30,31 };
 const uint8_t dowArray[] PROGMEM = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
 
+DS3231::DS3231(TwoWire *theWire) {
+    wire = theWire;
+}
+
 bool DS3231::begin(void)
 {
-    Wire.begin();
+    wire->begin();
 
     setBattery(true, false);
 
@@ -56,33 +60,33 @@ bool DS3231::begin(void)
 
 void DS3231::setDateTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second)
 {
-    Wire.beginTransmission(DS3231_ADDRESS);
+    wire->beginTransmission(DS3231_ADDRESS);
 
     #if ARDUINO >= 100
-        Wire.write(DS3231_REG_TIME);
+        wire->write(DS3231_REG_TIME);
     #else
-        Wire.send(DS3231_REG_TIME);
+        wire->send(DS3231_REG_TIME);
     #endif
 
     #if ARDUINO >= 100
-        Wire.write(dec2bcd(second));
-        Wire.write(dec2bcd(minute));
-        Wire.write(dec2bcd(hour));
-        Wire.write(dec2bcd(dow(year, month, day)));
-        Wire.write(dec2bcd(day));
-        Wire.write(dec2bcd(month));
-        Wire.write(dec2bcd(year-2000));
+        wire->write(dec2bcd(second));
+        wire->write(dec2bcd(minute));
+        wire->write(dec2bcd(hour));
+        wire->write(dec2bcd(dow(year, month, day)));
+        wire->write(dec2bcd(day));
+        wire->write(dec2bcd(month));
+        wire->write(dec2bcd(year - 2000));
     #else
-        Wire.send(dec2bcd(second));
-        Wire.send(dec2bcd(minute));
-        Wire.send(dec2bcd(hour));
-        Wire.send(dec2bcd(dow(year, month, day)));
-        Wire.send(dec2bcd(day));
-        Wire.send(dec2bcd(month));
-        Wire.send(dec2bcd(year-2000));
+        wire->send(dec2bcd(second));
+        wire->send(dec2bcd(minute));
+        wire->send(dec2bcd(hour));
+        wire->send(dec2bcd(dow(year, month, day)));
+        wire->send(dec2bcd(day));
+        wire->send(dec2bcd(month));
+        wire->send(dec2bcd(year-2000));
     #endif
 
-    Wire.endTransmission();
+    wire->endTransmission();
 }
 
 void DS3231::setDateTime(uint32_t t)
@@ -446,22 +450,22 @@ RTCDateTime DS3231::getDateTime(void)
 {
     int values[7];
 
-    Wire.beginTransmission(DS3231_ADDRESS);
+    wire->beginTransmission(DS3231_ADDRESS);
     #if ARDUINO >= 100
-        Wire.write(DS3231_REG_TIME);
+        wire->write(DS3231_REG_TIME);
     #else
-        Wire.send(DS3231_REG_TIME);
+        wire->send(DS3231_REG_TIME);
     #endif
-    Wire.endTransmission();
+    wire->endTransmission();
 
-    Wire.requestFrom(DS3231_ADDRESS, 7);
+    wire->requestFrom(DS3231_ADDRESS, 7);
 
     for (int i = 6; i >= 0; i--)
     {
         #if ARDUINO >= 100
-            values[i] = bcd2dec(Wire.read());
+            values[i] = bcd2dec(wire->read());
         #else
-            values[i] = bcd2dec(Wire.receive());
+            values[i] = bcd2dec(wire->receive());
         #endif
     }
 
@@ -596,22 +600,22 @@ float DS3231::readTemperature(void)
 {
     uint8_t msb, lsb;
 
-    Wire.beginTransmission(DS3231_ADDRESS);
+    wire->beginTransmission(DS3231_ADDRESS);
     #if ARDUINO >= 100
-        Wire.write(DS3231_REG_TEMPERATURE);
+        wire->write(DS3231_REG_TEMPERATURE);
     #else
-        Wire.send(DS3231_REG_TEMPERATURE);
+        wire->send(DS3231_REG_TEMPERATURE);
     #endif
-    Wire.endTransmission();
+    wire->endTransmission();
 
-    Wire.requestFrom(DS3231_ADDRESS, 2);
+    wire->requestFrom(DS3231_ADDRESS, 2);
 
     #if ARDUINO >= 100
-    msb = Wire.read();
-    lsb = Wire.read();
+    msb = wire->read();
+    lsb = wire->read();
     #else
-    msb = Wire.receive();
-    lsb = Wire.receive();
+    msb = wire->receive();
+    lsb = wire->receive();
     #endif
 
     return ((((short)msb << 8) | (short)lsb) >> 6) / 4.0f;
@@ -622,22 +626,22 @@ RTCAlarmTime DS3231::getAlarm1(void)
     uint8_t values[4];
     RTCAlarmTime a;
 
-    Wire.beginTransmission(DS3231_ADDRESS);
+    wire->beginTransmission(DS3231_ADDRESS);
     #if ARDUINO >= 100
-        Wire.write(DS3231_REG_ALARM_1);
+        wire->write(DS3231_REG_ALARM_1);
     #else
-        Wire.send(DS3231_REG_ALARM_1);
+        wire->send(DS3231_REG_ALARM_1);
     #endif
-    Wire.endTransmission();
+    wire->endTransmission();
 
-    Wire.requestFrom(DS3231_ADDRESS, 4);
+    wire->requestFrom(DS3231_ADDRESS, 4);
 
     for (int i = 3; i >= 0; i--)
     {
         #if ARDUINO >= 100
-            values[i] = bcd2dec(Wire.read() & 0b01111111);
+            values[i] = bcd2dec(wire->read() & 0b01111111);
         #else
-            values[i] = bcd2dec(Wire.receive() & 0b01111111);
+            values[i] = bcd2dec(wire->receive() & 0b01111111);
         #endif
     }
 
@@ -654,22 +658,22 @@ DS3231_alarm1_t DS3231::getAlarmType1(void)
     uint8_t values[4];
     uint8_t mode = 0;
 
-    Wire.beginTransmission(DS3231_ADDRESS);
+    wire->beginTransmission(DS3231_ADDRESS);
     #if ARDUINO >= 100
-        Wire.write(DS3231_REG_ALARM_1);
+        wire->write(DS3231_REG_ALARM_1);
     #else
-        Wire.send(DS3231_REG_ALARM_1);
+        wire->send(DS3231_REG_ALARM_1);
     #endif
-    Wire.endTransmission();
+    wire->endTransmission();
 
-    Wire.requestFrom(DS3231_ADDRESS, 4);
+    wire->requestFrom(DS3231_ADDRESS, 4);
 
     for (int i = 3; i >= 0; i--)
     {
         #if ARDUINO >= 100
-            values[i] = bcd2dec(Wire.read());
+            values[i] = bcd2dec(wire->read());
         #else
-            values[i] = bcd2dec(Wire.receive());
+            values[i] = bcd2dec(wire->receive());
         #endif
     }
 
@@ -735,22 +739,22 @@ void DS3231::setAlarm1(uint8_t dydw, uint8_t hour, uint8_t minute, uint8_t secon
             break;
     }
 
-    Wire.beginTransmission(DS3231_ADDRESS);
+    wire->beginTransmission(DS3231_ADDRESS);
     #if ARDUINO >= 100
-        Wire.write(DS3231_REG_ALARM_1);
-        Wire.write(second);
-        Wire.write(minute);
-        Wire.write(hour);
-        Wire.write(dydw);
+        wire->write(DS3231_REG_ALARM_1);
+        wire->write(second);
+        wire->write(minute);
+        wire->write(hour);
+        wire->write(dydw);
     #else
-        Wire.send(DS3231_REG_ALARM_1);
-        Wire.send(second);
-        Wire.send(minute);
-        Wire.send(hour);
-        Wire.send(dydw);
+        wire->send(DS3231_REG_ALARM_1);
+        wire->send(second);
+        wire->send(minute);
+        wire->send(hour);
+        wire->send(dydw);
     #endif
 
-    Wire.endTransmission();
+    wire->endTransmission();
 
     armAlarm1(armed);
 
@@ -811,22 +815,22 @@ RTCAlarmTime DS3231::getAlarm2(void)
     uint8_t values[3];
     RTCAlarmTime a;
 
-    Wire.beginTransmission(DS3231_ADDRESS);
+    wire->beginTransmission(DS3231_ADDRESS);
     #if ARDUINO >= 100
-        Wire.write(DS3231_REG_ALARM_2);
+        wire->write(DS3231_REG_ALARM_2);
     #else
-        Wire.send(DS3231_REG_ALARM_2);
+        wire->send(DS3231_REG_ALARM_2);
     #endif
-    Wire.endTransmission();
+    wire->endTransmission();
 
-    Wire.requestFrom(DS3231_ADDRESS, 3);
+    wire->requestFrom(DS3231_ADDRESS, 3);
 
     for (int i = 2; i >= 0; i--)
     {
         #if ARDUINO >= 100
-            values[i] = bcd2dec(Wire.read() & 0b01111111);
+            values[i] = bcd2dec(wire->read() & 0b01111111);
         #else
-            values[i] = bcd2dec(Wire.receive() & 0b01111111);
+            values[i] = bcd2dec(wire->receive() & 0b01111111);
         #endif
     }
 
@@ -843,22 +847,22 @@ DS3231_alarm2_t DS3231::getAlarmType2(void)
     uint8_t values[3];
     uint8_t mode = 0;
 
-    Wire.beginTransmission(DS3231_ADDRESS);
+    wire->beginTransmission(DS3231_ADDRESS);
     #if ARDUINO >= 100
-        Wire.write(DS3231_REG_ALARM_2);
+        wire->write(DS3231_REG_ALARM_2);
     #else
-        Wire.send(DS3231_REG_ALARM_2);
+        wire->send(DS3231_REG_ALARM_2);
     #endif
-    Wire.endTransmission();
+    wire->endTransmission();
 
-    Wire.requestFrom(DS3231_ADDRESS, 3);
+    wire->requestFrom(DS3231_ADDRESS, 3);
 
     for (int i = 2; i >= 0; i--)
     {
         #if ARDUINO >= 100
-            values[i] = bcd2dec(Wire.read());
+            values[i] = bcd2dec(wire->read());
         #else
-            values[i] = bcd2dec(Wire.receive());
+            values[i] = bcd2dec(wire->receive());
         #endif
     }
 
@@ -910,20 +914,20 @@ void DS3231::setAlarm2(uint8_t dydw, uint8_t hour, uint8_t minute, DS3231_alarm2
             break;
     }
 
-    Wire.beginTransmission(DS3231_ADDRESS);
+    wire->beginTransmission(DS3231_ADDRESS);
     #if ARDUINO >= 100
-        Wire.write(DS3231_REG_ALARM_2);
-        Wire.write(minute);
-        Wire.write(hour);
-        Wire.write(dydw);
+        wire->write(DS3231_REG_ALARM_2);
+        wire->write(minute);
+        wire->write(hour);
+        wire->write(dydw);
     #else
-        Wire.send(DS3231_REG_ALARM_2);
-        Wire.send(minute);
-        Wire.send(hour);
-        Wire.send(dydw);
+        wire->send(DS3231_REG_ALARM_2);
+        wire->send(minute);
+        wire->send(hour);
+        wire->send(dydw);
     #endif
 
-    Wire.endTransmission();
+    wire->endTransmission();
 
     armAlarm2(armed);
 
@@ -1219,34 +1223,34 @@ uint8_t DS3231::dow(uint16_t y, uint8_t m, uint8_t d)
 
 void DS3231::writeRegister8(uint8_t reg, uint8_t value)
 {
-    Wire.beginTransmission(DS3231_ADDRESS);
+    wire->beginTransmission(DS3231_ADDRESS);
     #if ARDUINO >= 100
-        Wire.write(reg);
-        Wire.write(value);
+        wire->write(reg);
+        wire->write(value);
     #else
-        Wire.send(reg);
-        Wire.send(value);
+        wire->send(reg);
+        wire->send(value);
     #endif
-    Wire.endTransmission();
+    wire->endTransmission();
 }
 
 uint8_t DS3231::readRegister8(uint8_t reg)
 {
     uint8_t value;
-    Wire.beginTransmission(DS3231_ADDRESS);
+    wire->beginTransmission(DS3231_ADDRESS);
     #if ARDUINO >= 100
-        Wire.write(reg);
+        wire->write(reg);
     #else
-        Wire.send(reg);
+        wire->send(reg);
     #endif
-    Wire.endTransmission();
+    wire->endTransmission();
 
-    Wire.requestFrom(DS3231_ADDRESS, 1);
+    wire->requestFrom(DS3231_ADDRESS, 1);
 
     #if ARDUINO >= 100
-        value = Wire.read();
+        value = wire->read();
     #else
-        value = Wire.receive();
+        value = wire->receive();
     #endif
 
     return value;
