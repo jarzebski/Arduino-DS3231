@@ -28,6 +28,8 @@ SOFTWARE.
 #ifndef DS3231_h
 #define DS3231_h
 
+#include <Wire.h>
+
 #if ARDUINO >= 100
 #include "Arduino.h"
 #else
@@ -95,7 +97,8 @@ typedef enum
 
 class DS3231
 {
-    public:
+public:
+    DS3231(TwoWire *theWire = &Wire);
 
 	bool begin(void);
 
@@ -138,7 +141,7 @@ class DS3231
 
 	static RTCDateTime loadDateTimeFromLong(uint32_t t);
 
-    private:
+private:
 	RTCDateTime t;
 
 	char *strDayOfWeek(uint8_t dayOfWeek);
@@ -162,6 +165,7 @@ class DS3231
 
 	void writeRegister8(uint8_t reg, uint8_t value);
 	uint8_t readRegister8(uint8_t reg);
+    TwoWire *wire;
 };
 
 #endif
