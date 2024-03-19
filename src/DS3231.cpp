@@ -36,12 +36,12 @@ SOFTWARE.
 const uint8_t daysArray [] PROGMEM = { 31,28,31,30,31,30,31,31,30,31,30,31 };
 const uint8_t dowArray[] PROGMEM = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
 
-DS3231::DS3231(TwoWire *theWire) {
-    wire = theWire;
+DS3231::DS3231() {
 }
 
-bool DS3231::begin(void)
+bool DS3231::begin(TwoWire *theWire)
 {
+    wire = theWire;
     wire->begin();
 
     setBattery(true, false);

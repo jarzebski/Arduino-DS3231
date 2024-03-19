@@ -98,9 +98,9 @@ typedef enum
 class DS3231
 {
 public:
-    DS3231(TwoWire *theWire = &Wire);
+    DS3231();
 
-	bool begin(void);
+	bool begin(TwoWire *theWire = &Wire);
 
 	void setDateTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second);
 	void setDateTime(uint32_t t);
